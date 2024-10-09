@@ -5,7 +5,7 @@ CREATE TABLE User (
     address VARCHAR(255),
     birthdate DATE
 );
-
+#update1
 CREATE TABLE Product (
     barcode VARCHAR(50) PRIMARY KEY,
     iname VARCHAR(100) NOT NULL,
