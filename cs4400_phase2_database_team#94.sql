@@ -5,20 +5,17 @@ CREATE TABLE User (
     address VARCHAR(255),
     birthdate DATE
 );
-#update1
 CREATE TABLE Product (
     barcode VARCHAR(50) PRIMARY KEY,
     iname VARCHAR(100) NOT NULL,
     weight DECIMAL(10, 2)
 );
-
 CREATE TABLE Location (
     label VARCHAR(50) PRIMARY KEY,
     space DECIMAL(10, 2),
     x_coord DECIMAL(10, 2) NOT NULL,
     y_coord DECIMAL(10, 2) NOT NULL
 );
-
 CREATE TABLE Business (
     name VARCHAR(100) PRIMARY KEY,
     rating DECIMAL(3, 2),
@@ -26,27 +23,29 @@ CREATE TABLE Business (
     location_label VARCHAR(50),
     FOREIGN KEY (location_label) REFERENCES Location(label)
 );
-
 CREATE TABLE Service (
     ID INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     location_label VARCHAR(50),
-    revenue DECIMAL(15, 2),
+    managed_by VARCHAR(50),
     FOREIGN KEY (location_label) REFERENCES Location(label)
+    FOREIGN KEY (managed_by) REFERENCES Worker(username)
 );
-
 CREATE TABLE Van (
-    tag VARCHAR(50) PRIMARY KEY,
+    tag VARCHAR(50),
+    ID int,
     capacity DECIMAL(10, 2),
     sales DECIMAL(15, 2),
     fuel DECIMAL(10, 2),
-    weight DECIMAL(10, 2),
-    service_ID INT,
+    controlled_by VARCHAR(50),
+    owned_by VARCHAR(50),
     location_label VARCHAR(50),
-    FOREIGN KEY (service_ID) REFERENCES Service(ID),
+    PRIMARY KEY (tag, ID),
+    FOREIGN KEY (ID) REFERENCES Service(ID),
+    FOREIGN KEY (controlled_by) REFERENCES Driver(username)
+    FOREIGN KEY (owned_by) REFERENCES Service(ID)
     FOREIGN KEY (location_label) REFERENCES Location(label)
 );
-
 CREATE TABLE Employee (
     username VARCHAR(50) PRIMARY KEY,
     taxID VARCHAR(50) NOT NULL,
@@ -55,13 +54,10 @@ CREATE TABLE Employee (
     experience INT,
     FOREIGN KEY (username) REFERENCES User(username)
 );
-
 CREATE TABLE Owner (
     username VARCHAR(50) PRIMARY KEY,
-    debt DECIMAL(15, 2),
     FOREIGN KEY (username) REFERENCES User(username)
 );
-
 CREATE TABLE Driver (
     username VARCHAR(50) PRIMARY KEY,
     licenseID VARCHAR(50) NOT NULL,
@@ -69,12 +65,10 @@ CREATE TABLE Driver (
     successful_trips INT,
     FOREIGN KEY (username) REFERENCES User(username)
 );
-
 CREATE TABLE Worker (
     username VARCHAR(50) PRIMARY KEY,
     FOREIGN KEY (username) REFERENCES User(username)
 );
-
 CREATE TABLE Fund (
     owner_username VARCHAR(50),
     business_name VARCHAR(100),
@@ -84,7 +78,6 @@ CREATE TABLE Fund (
     FOREIGN KEY (owner_username) REFERENCES Owner(username),
     FOREIGN KEY (business_name) REFERENCES Business(name)
 );
-
 CREATE TABLE WorkFor (
     worker_username VARCHAR(50),
     service_ID INT,
@@ -92,21 +85,13 @@ CREATE TABLE WorkFor (
     FOREIGN KEY (worker_username) REFERENCES Worker(username),
     FOREIGN KEY (service_ID) REFERENCES Service(ID)
 );
-
-CREATE TABLE Manage (
-    employee_username VARCHAR(50),
-    service_ID INT,
-    PRIMARY KEY (employee_username, service_ID),
-    FOREIGN KEY (employee_username) REFERENCES Employee(username),
-    FOREIGN KEY (service_ID) REFERENCES Service(ID)
-);
-
 CREATE TABLE Contain (
     van_tag VARCHAR(50),
+    vanID INT,
     product_barcode VARCHAR(50),
     quantity INT,
     price DECIMAL(15, 2),
-    PRIMARY KEY (van_tag, product_barcode),
-    FOREIGN KEY (van_tag) REFERENCES Van(tag),
+    PRIMARY KEY (van_tag, vanID, product_barcode),
+    FOREIGN KEY (van_tag, vanID) REFERENCES Van(tag, ID),
     FOREIGN KEY (product_barcode) REFERENCES Product(barcode)
 );
