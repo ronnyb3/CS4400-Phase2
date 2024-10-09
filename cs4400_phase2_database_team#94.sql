@@ -18,34 +18,12 @@ CREATE TABLE Location (
 );
 CREATE TABLE Business (
     name VARCHAR(100) PRIMARY KEY,
-    rating INT CHECK (BETWEEN 1 and 5),
+    rating INT CHECK (rating BETWEEN 1 and 5),
     spent DECIMAL(15, 2),
     location_label VARCHAR(50),
     FOREIGN KEY (location_label) REFERENCES Location(label)
 );
-CREATE TABLE Service (
-    ID INT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    location_label VARCHAR(50),
-    managed_by VARCHAR(50),
-    FOREIGN KEY (location_label) REFERENCES Location(label)
-    FOREIGN KEY (managed_by) REFERENCES Worker(username)
-);
-CREATE TABLE Van (
-    tag VARCHAR(50),
-    ID int,
-    capacity DECIMAL(10, 2),
-    sales DECIMAL(15, 2),
-    fuel DECIMAL(10, 2),
-    controlled_by VARCHAR(50),
-    owned_by VARCHAR(50),
-    location_label VARCHAR(50),
-    PRIMARY KEY (tag, ID),
-    FOREIGN KEY (ID) REFERENCES Service(ID),
-    FOREIGN KEY (controlled_by) REFERENCES Driver(username)
-    FOREIGN KEY (owned_by) REFERENCES Service(ID)
-    FOREIGN KEY (location_label) REFERENCES Location(label)
-);
+
 CREATE TABLE Employee (
     username VARCHAR(40) PRIMARY KEY,
     taxID VARCHAR(40) NOT NULL,
@@ -69,6 +47,31 @@ CREATE TABLE Worker (
     username VARCHAR(50) PRIMARY KEY,
     FOREIGN KEY (username) REFERENCES User(username)
 );
+
+CREATE TABLE Service (
+    ID VARCHAR(40) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location_label VARCHAR(50),
+    managed_by VARCHAR(50),
+    FOREIGN KEY (location_label) REFERENCES Location(label),
+    FOREIGN KEY (managed_by) REFERENCES Worker(username)
+);
+CREATE TABLE Van (
+    tag VARCHAR(40),
+    ID VARCHAR(40),
+    capacity DECIMAL(10, 2),
+    sales DECIMAL(15, 2),
+    fuel DECIMAL(10, 2),
+    controlled_by VARCHAR(100),
+    owned_by VARCHAR(40),
+    location_label VARCHAR(100),
+    PRIMARY KEY (tag, ID),
+    FOREIGN KEY (ID) REFERENCES Service(ID),
+    FOREIGN KEY (controlled_by) REFERENCES Driver(username),
+    FOREIGN KEY (owned_by) REFERENCES Service(ID),
+    FOREIGN KEY (location_label) REFERENCES Location(label)
+);
+
 CREATE TABLE Fund (
     owner_username VARCHAR(50),
     business_name VARCHAR(100),
@@ -86,8 +89,8 @@ CREATE TABLE WorkFor (
     FOREIGN KEY (service_ID) REFERENCES Service(ID)
 );
 CREATE TABLE Contain (
-    van_tag VARCHAR(50),
-    vanID INT,
+    van_tag VARCHAR(40),
+    vanID VARCHAR(40),
     product_barcode VARCHAR(50),
     quantity INT,
     price DECIMAL(15, 2),
